@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Wireframe Tutorial</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+        }
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 14px;
+            z-index: 100;
+        }
+        .fallback {
+            color: red;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h3>Three.js Wireframe Tutorial</h3>
+        <p>Rotating wireframe cube and sphere</p>
+    </div>
+    
+    <div id="fallback" class="fallback" style="display: none;">
+        <h3>Three.js Library Not Available</h3>
+        <p>Please check the <a href="wireframe.html" style="color: #00ff00;">HTML5 Canvas version</a> instead.</p>
+    </div>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.155.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.155.0/examples/jsm/"
+            }
+        }
+    </script>
+    
+    <script type="module">
+        try {
+            // Import Three.js
+            import * as THREE from 'three';
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            
+            // Camera setup
+            const camera = new THREE.PerspectiveCamera(
+                75, // field of view
+                window.innerWidth / window.innerHeight, // aspect ratio
+                0.1, // near clipping plane
+                1000 // far clipping plane
+            );
+            
+            // Renderer setup
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 1); // black background
+            document.body.appendChild(renderer.domElement);
+            
+            // Create wireframe cube geometry
+            const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
+            const cubeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ff00, // green color
+                wireframe: true
+            });
+            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.x = -2;
+            scene.add(cube);
+            
+            // Create wireframe sphere geometry
+            const sphereGeometry = new THREE.SphereGeometry(1, 16, 12);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x0088ff, // blue color
+                wireframe: true
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.x = 2;
+            scene.add(sphere);
+            
+            // Position camera
+            camera.position.z = 6;
+            
+            // Animation function
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate the objects
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                
+                sphere.rotation.x += 0.008;
+                sphere.rotation.y += 0.012;
+                
+                // Render the scene
+                renderer.render(scene, camera);
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            
+            // Start animation
+            animate();
+            
+        } catch (error) {
+            console.error('Three.js failed to load:', error);
+            document.getElementById('fallback').style.display = 'block';
+            document.querySelector('.info').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
